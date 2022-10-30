@@ -259,7 +259,11 @@ static pci_ers_result_t adf_slot_reset(struct pci_dev *pdev)
                 ADF_ERROR("Can't find acceleration device\n");
                 return PCI_ERS_RESULT_DISCONNECT;
         }
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 7, 0))
+        pci_aer_clear_nonfatal_status(pdev);
+#else
         pci_cleanup_aer_uncorrect_error_status(pdev);
+#endif
         /* Reset device and wait for result */
         if (adf_aer_schedule_reset_dev(accel_dev, 1)) {
 

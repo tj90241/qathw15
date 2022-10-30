@@ -230,7 +230,7 @@ LacSymQat_CipherHwBlockPopulate(
     }
     else if (LAC_CIPHER_IS_ARC4(pCipherSetupData->cipherAlgorithm))
     {
-        mode = mode;  /* No mode for ARC4 - leave as default */
+        /* No mode for ARC4 - leave as default */
     }
     else
     {

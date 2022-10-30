@@ -883,6 +883,37 @@ static int adf_probe(struct pci_dev *pdev,
 }
 
 /*
+ * __pci_reset_function
+ * Provide implementation of a function removed in Linux 4.15.
+ * pci_dev_[un]lock was phased in different kernel versions...
+ */
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4,15,0))
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(5,16,0))
+static void pci_dev_lock(struct pci_dev *dev)
+{
+        device_lock(&dev->dev);
+        pci_cfg_access_lock(dev);
+}
+#endif
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(5,14,0))
+static void pci_dev_unlock(struct pci_dev *dev)
+{
+        pci_cfg_access_unlock(dev);
+        device_unlock(&dev->dev);
+}
+#endif
+static int __pci_reset_function(struct pci_dev *dev)
+{
+        int ret;
+
+        pci_dev_lock(dev);
+        ret = __pci_reset_function_locked(dev);
+        pci_dev_unlock(dev);
+        return ret;
+}
+#endif
+
+/*
  * adf_restore_dev
  * Brings device to state just after probe - ready to be started.
  */
@@ -1190,7 +1221,7 @@ static int __devinit adfdrv_init()
  * __devinit macro was removed from the 3.10 kernel (RedHat : 3.8 kernel)
  * as the functionality was no longer relevent
  */
-static int adfdrv_init()
+static int adfdrv_init(void)
 #endif
 {
         int status = 0;
@@ -1263,7 +1294,7 @@ static int adfdrv_init()
  * adfdrv_release
  * ADF Module release function
  */
-static void adfdrv_release()
+static void adfdrv_release(void)
 {
         adf_ring_chrdev_unregister();
         adf_csr_chrdev_unregister();
@@ -1274,12 +1305,12 @@ static void adfdrv_release()
         adf_cfgUninit();
 }
 
-int __init driver_module_init()
+int __init driver_module_init(void)
 {
         return adfdrv_init();
 }
 
-void driver_module_exit()
+void driver_module_exit(void)
 {
         adfdrv_release();
 }

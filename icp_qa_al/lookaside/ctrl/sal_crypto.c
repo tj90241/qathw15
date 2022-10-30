@@ -2605,7 +2605,7 @@ icp_sal_CyPollInstance(CpaInstanceHandle instanceHandle_in,
 }
 
 CpaInstanceHandle
-Lac_GetFirstHandle()
+Lac_GetFirstHandle(void)
 {
     CpaStatus status = CPA_STATUS_SUCCESS;
     static icp_accel_dev_t *adfInsts[ADF_MAX_DEVICES] = {0};

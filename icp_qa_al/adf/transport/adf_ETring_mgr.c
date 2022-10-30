@@ -1752,7 +1752,7 @@ CpaStatus adf_cleanup_ETR_Data(icp_accel_dev_t *accelHandle)
 /*
  * Initialise the ET Ring Manager
  */
-CpaStatus adf_init_ETManager()
+CpaStatus adf_init_ETManager(void)
 {
     /* Create the Ring Manager */
     ETRingMgr.trans_type = ICP_TRANS_TYPE_ETR;
@@ -1767,7 +1767,7 @@ CpaStatus adf_init_ETManager()
 /*
  * Shutdown the ET Ring Manager
  */
-CpaStatus adf_shutdown_ETManager()
+CpaStatus adf_shutdown_ETManager(void)
 {
     /* Unregister from the Ring Factory */
     return adf_trans_deregisterTransMgr(&ETRingMgr);

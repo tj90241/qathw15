@@ -410,7 +410,7 @@ typedef void (*OsalVoidFnPtr) (void);
  */
 typedef struct
 {
-    UINT32 secs;        /**< seconds */
+    UINT64 secs;        /**< seconds */
     UINT32 nsecs;        /**< nanoseconds */
 } OsalTimeval;
 

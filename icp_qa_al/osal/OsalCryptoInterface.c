@@ -30,14 +30,22 @@
  */
 
 #include "Osal.h"
+#include <crypto/hash.h>
 #include <linux/crypto.h>
-#include <linux/cryptohash.h>
 #ifdef CENTOS65_INTEG
 #define LINUX_VERSION_CODE KERNEL_VERSION(2,6,34)
 #endif
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,29))
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5,12,0))
+#include <crypto/internal/cipher.h>
+#endif
 #include <crypto/internal/hash.h>
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5,11,0))
+#include <crypto/sha1.h>
+#include <crypto/sha2.h>
+#else
 #include <crypto/sha.h>
+#endif
 
 static struct crypto_shash *sha1_tfm = NULL;
 static struct crypto_shash *sha224_tfm = NULL;
@@ -63,11 +71,17 @@ OSAL_STATUS osalHashMD5(UINT8 *in, UINT8 *out)
         struct md5_state *sctx = NULL;
         struct {
                 struct shash_desc shash;
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4,20,0))
+                char ctx[HASH_MAX_DESCSIZE];
+#else
                 char ctx[crypto_shash_descsize(md5_tfm)];
+#endif
         } desc;
 
         desc.shash.tfm = md5_tfm;
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(5,2,0))
         desc.shash.flags = 0x0;
+#endif
         rc = crypto_shash_init(&desc.shash);
         if(rc)
         {
@@ -101,11 +115,17 @@ osalHashMD5Full(UINT8 *in, UINT8 *out, UINT32 len)
     {
         struct {
                 struct shash_desc shash;
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4,20,0))
+                char ctx[HASH_MAX_DESCSIZE];
+#else
                 char ctx[crypto_shash_descsize(md5_tfm)];
+#endif
         } desc;
 
         desc.shash.tfm = md5_tfm;
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(5,2,0))
         desc.shash.flags = 0x0;
+#endif
         rc = crypto_shash_init(&desc.shash);
         if(rc)
         {
@@ -153,11 +173,17 @@ osalHashSHA1(UINT8 *in,
         struct sha1_state *sctx = NULL;
         struct {
                struct shash_desc shash;
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4,20,0))
+               char ctx[HASH_MAX_DESCSIZE];
+#else
                char ctx[crypto_shash_descsize(sha1_tfm)];
+#endif
         } desc;
 
         desc.shash.tfm = sha1_tfm;
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(5,2,0))
         desc.shash.flags = 0x0;
+#endif
         rc = crypto_shash_init(&desc.shash);
         if(rc)
         {
@@ -191,11 +217,17 @@ osalHashSHA1Full(UINT8 *in, UINT8 *out, UINT32 len)
     {
         struct {
                struct shash_desc shash;
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4,20,0))
+               char ctx[HASH_MAX_DESCSIZE];
+#else
                char ctx[crypto_shash_descsize(sha1_tfm)];
+#endif
         } desc;
 
         desc.shash.tfm = sha1_tfm;
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(5,2,0))
         desc.shash.flags = 0x0;
+#endif
         rc = crypto_shash_init(&desc.shash);
         if(rc)
         {
@@ -242,11 +274,17 @@ osalHashSHA224(UINT8 *in,
         struct sha256_state *sctx = NULL;
         struct {
                 struct shash_desc shash;
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4,20,0))
+                char ctx[HASH_MAX_DESCSIZE];
+#else
                 char ctx[crypto_shash_descsize(sha224_tfm)];
+#endif
         } desc;
 
         desc.shash.tfm = sha224_tfm;
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(5,2,0))
         desc.shash.flags = 0x0;
+#endif
         rc = crypto_shash_init(&desc.shash);
         if(rc)
         {
@@ -282,11 +320,17 @@ osalHashSHA256(UINT8 *in, UINT8 *out)
         struct sha256_state *sctx = NULL;
         struct {
                 struct shash_desc shash;
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4,20,0))
+                char ctx[HASH_MAX_DESCSIZE];
+#else
                 char ctx[crypto_shash_descsize(sha256_tfm)];
+#endif
         } desc;
 
         desc.shash.tfm = sha256_tfm;
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(5,2,0))
         desc.shash.flags = 0x0;
+#endif
         rc = crypto_shash_init(&desc.shash);
         if(rc)
         {
@@ -320,11 +364,17 @@ osalHashSHA256Full(UINT8 *in, UINT8 *out, UINT32 len)
     {
         struct {
                struct shash_desc shash;
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4,20,0))
+               char ctx[HASH_MAX_DESCSIZE];
+#else
                char ctx[crypto_shash_descsize(sha256_tfm)];
+#endif
         } desc;
 
         desc.shash.tfm = sha256_tfm;
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(5,2,0))
         desc.shash.flags = 0x0;
+#endif
 
         rc = crypto_shash_init(&desc.shash);
         if(rc)
@@ -371,11 +421,17 @@ osalHashSHA384(UINT8 *in, UINT8 *out)
         struct sha512_state *sctx = NULL;
         struct {
                 struct shash_desc shash;
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4,20,0))
+                char ctx[HASH_MAX_DESCSIZE];
+#else
                 char ctx[crypto_shash_descsize(sha384_tfm)];
+#endif
         } desc;
 
         desc.shash.tfm = sha384_tfm;
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(5,2,0))
         desc.shash.flags = 0x0;
+#endif
         rc = crypto_shash_init(&desc.shash);
         if(rc)
         {
@@ -409,11 +465,17 @@ osalHashSHA384Full(UINT8 *in, UINT8 *out, UINT32 len)
     {
         struct {
                struct shash_desc shash;
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4,20,0))
+               char ctx[HASH_MAX_DESCSIZE];
+#else
                char ctx[crypto_shash_descsize(sha384_tfm)];
+#endif
         } desc;
 
         desc.shash.tfm = sha384_tfm;
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(5,2,0))
         desc.shash.flags = 0x0;
+#endif
         rc = crypto_shash_init(&desc.shash);
         if(rc)
         {
@@ -458,11 +520,17 @@ osalHashSHA512(UINT8 *in, UINT8 *out)
         struct sha512_state *sctx = NULL;
         struct {
                 struct shash_desc shash;
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4,20,0))
+                char ctx[HASH_MAX_DESCSIZE];
+#else
                 char ctx[crypto_shash_descsize(sha512_tfm)];
+#endif
         } desc;
 
         desc.shash.tfm = sha512_tfm;
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(5,2,0))
         desc.shash.flags = 0x0;
+#endif
         rc = crypto_shash_init(&desc.shash);
         if(rc)
         {
@@ -496,11 +564,17 @@ osalHashSHA512Full(UINT8 *in, UINT8 *out, UINT32 len)
     {
         struct {
                struct shash_desc shash;
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4,20,0))
+               char ctx[HASH_MAX_DESCSIZE];
+#else
                char ctx[crypto_shash_descsize(sha512_tfm)];
+#endif
         } desc;
 
         desc.shash.tfm = sha512_tfm;
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(5,2,0))
         desc.shash.flags = 0x0;
+#endif
         rc = crypto_shash_init(&desc.shash);
         if(rc)
         {

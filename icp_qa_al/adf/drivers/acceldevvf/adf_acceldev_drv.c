@@ -452,7 +452,7 @@ static int adf_probe(struct pci_dev *pdev,
                           pci_info->pciBars[i].size);
 
                 /* Map the IO Memory */
-                pci_info->pciBars[i].virtAddr = (UARCH_INT) ioremap_nocache(
+                pci_info->pciBars[i].virtAddr = (UARCH_INT) ioremap(
                                                 pci_info->pciBars[i].baseAddr,
                                                 pci_info->pciBars[i].size);
                 if (!pci_info->pciBars[i].virtAddr ) {
@@ -575,7 +575,7 @@ static int __devinit adfdrv_init()
  * __devinit macro was removed from the 3.10 kernel (RedHat: 3.8 kernel)
  * as the functionality was no longer relevent
  */
-static int adfdrv_init()
+static int adfdrv_init(void)
 #endif
 {
         int status = 0;
@@ -637,7 +637,7 @@ static int adfdrv_init()
  * adfdrv_release
  * ADF Module release function
  */
-static void adfdrv_release()
+static void adfdrv_release(void)
 {
         adf_ring_chrdev_unregister();
         adf_csr_chrdev_unregister();
@@ -647,12 +647,12 @@ static void adfdrv_release()
         adf_cfgUninit();
 }
 
-int __init driver_module_init()
+int __init driver_module_init(void)
 {
         return adfdrv_init();
 }
 
-void driver_module_exit()
+void driver_module_exit(void)
 {
         adfdrv_release();
 }

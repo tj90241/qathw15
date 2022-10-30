@@ -78,7 +78,12 @@
 #include <linux/crypto.h>
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,28))
 #include <crypto/hash.h>
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5,11,0))
+#include <crypto/sha1.h>
+#include <crypto/sha2.h>
+#else
 #include <crypto/sha.h>
+#endif
 #endif   /* End of check for KERNEL_VERSION(2,6,28) */
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,34))
 #include <crypto/md5.h>
@@ -112,6 +117,9 @@
 MODULE_DESCRIPTION("ICP Look Aside Acceleration driver");
 MODULE_AUTHOR("Intel Corporation");
 MODULE_LICENSE("Dual BSD/GPL");
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5,12,0))
+MODULE_IMPORT_NS(CRYPTO_INTERNAL);
+#endif
 
 extern int  __init osal_init(void);
 extern void osal_exit(void);
@@ -161,7 +169,7 @@ static int __init QaModInit(void)
     icpSetProcessName(LAC_KERNEL_PROCESS_NAME);
     /* MUST register QAT first as qat instances need to be started before
        service instances */
-#ifndef ACCELDEVVF
+#ifndef ADF_PLATFORM_ACCELDEVVF
     SalCtrl_AdfQatRegister();
 #endif
     SalCtrl_AdfServicesRegister();
@@ -175,7 +183,7 @@ failed:
 
 static void __exit QaModExit(void)
 {
-#ifndef ACCELDEVVF
+#ifndef ADF_PLATFORM_ACCELDEVVF
     SalCtrl_AdfQatUnregister();
 #endif
     SalCtrl_AdfServicesUnregister();

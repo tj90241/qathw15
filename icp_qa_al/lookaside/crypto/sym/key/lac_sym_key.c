@@ -1512,7 +1512,7 @@ LacSymKey_KeyGenSslTls_GenCommon(CpaInstanceHandle instanceHandle,
                 0, /* auth len*/
                 CPA_FALSE,
                 NULL,
-                CPA_CY_SYM_OP_NONE /* hash Algorithm */);
+                CPA_CY_SYM_HASH_NONE /* hash Algorithm */);
         /* Set up the labels and their length */
         if (CPA_CY_KEY_TLS_OP_USER_DEFINED == pKeyGenTlsOpData->tlsOp)
         {
@@ -1959,7 +1959,7 @@ cpaCyKeyGenSsl(const CpaInstanceHandle instanceHandle_in,
         pKeyGenCb,
         pCallbackTag,
         LAC_CONST_PTR_CAST(pKeyGenSslOpData),
-        CPA_CY_SYM_OP_NONE, /* hashAlgorithm */
+        CPA_CY_SYM_HASH_NONE, /* hashAlgorithm */
         pGeneratedKeyBuffer,
         ICP_QAT_FW_LA_CMD_SSL3_KEY_DERIVE);
 }
@@ -2030,7 +2030,7 @@ cpaCyKeyGenTls(const CpaInstanceHandle instanceHandle_in,
                     pKeyGenCb,
                     pCallbackTag,
                     LAC_CONST_PTR_CAST(pKeyGenTlsOpData),
-                    CPA_CY_SYM_OP_NONE, /* hashAlgorithm */
+                    CPA_CY_SYM_HASH_NONE, /* hashAlgorithm */
                     pGeneratedKeyBuffer,
                     ICP_QAT_FW_LA_CMD_TLS_V1_1_KEY_DERIVE);
 }

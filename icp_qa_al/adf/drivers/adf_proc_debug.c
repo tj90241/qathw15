@@ -130,6 +130,8 @@ static void *adf_debug_start(struct seq_file *sfile, loff_t *pos)
  */
 static int adf_debug_show(struct seq_file *sfile, void *v)
 {
+        return 0;
+#if 0
         debug_file_info_t* file_info = sfile->private;
         if (file_info && file_info->seq_read && file_info->page) {
                 int ret = 0, old_offset = file_info->offset;
@@ -144,6 +146,7 @@ static int adf_debug_show(struct seq_file *sfile, void *v)
                 }
         }
         return 0;
+#endif
 }
 
 /*
@@ -216,15 +219,14 @@ static int adf_debug_open(struct inode *inode, struct file *file)
 }
 
 /*
- * adf_debug_file_ops
+ * adf_debug_proc_ops
  * File operations for the seq proc files
  */
-static struct file_operations adf_debug_file_ops = {
-        .owner   = THIS_MODULE,
-        .open    = adf_debug_open,
-        .read    = seq_read,
-        .llseek  = seq_lseek,
-        .release = seq_release
+static struct proc_ops adf_debug_proc_ops = {
+        .proc_open    = adf_debug_open,
+        .proc_read    = seq_read,
+        .proc_lseek   = seq_lseek,
+        .proc_release = seq_release
 };
 
 /*
@@ -348,14 +350,14 @@ CpaStatus icp_adf_debugAddFile(icp_accel_dev_t *accel_dev,
                                   ADF_PROC_FILE_PERM,
                                   file_info->parent->proc_entry);
         if (entry) {
-                entry->proc_fops = &adf_debug_file_ops;
+                entry->proc_fops = &adf_debug_proc_ops;
                 entry->data = (void*)file_info;
         }
 #else
         entry = proc_create_data(file_info->name,
                                  ADF_PROC_FILE_PERM,
                                  file_info->parent->proc_entry,
-                                 &adf_debug_file_ops, (void*) file_info);
+                                 &adf_debug_proc_ops, (void*) file_info);
 #endif
         file_info->proc_entry = entry;
         if (NULL == file_info->proc_entry) {

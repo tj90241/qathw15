@@ -77,6 +77,7 @@
 #include <linux/errno.h>
 #include <linux/device.h>
 #include <linux/interrupt.h>
+#include <linux/pci.h>
 #include <linux/workqueue.h>
 #include <asm/uaccess.h>
 #include <asm/io.h>
@@ -214,7 +215,11 @@ STATIC int adf_enable_msix(icp_accel_dev_t *accel_dev)
                (hw_data->msix.aeVectorStart - hw_data->msix.banksVectorNum);
         }
 
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3,14,0))
+        stat = pci_enable_msix_exact(pci_dev_info->pDev,
+#else
         stat = pci_enable_msix(pci_dev_info->pDev,
+#endif
                                pci_dev_info->msixEntries.value,
                                msix_num_entries);
         if (SUCCESS != stat){

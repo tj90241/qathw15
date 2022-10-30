@@ -422,16 +422,25 @@ osalTimeGet (OsalTimeval * pTime)
      * -- time_t   (type long, second)
      * -- suseconds_t (type long, usecond)
      */
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 17, 0))
+    struct timespec64 _pTime;
+    ktime_get_ts64 (&_pTime);
+#else
     struct timeval _pTime;
-
     do_gettimeofday (&_pTime);
+#endif
+
     /*
      * Translate microsecond to nanosecond,
      * second field is identical so no translation
      * there.
      */
     pTime->secs = _pTime.tv_sec;
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 17, 0))
+    pTime->nsecs = _pTime.tv_nsec;
+#else
     pTime->nsecs = _pTime.tv_usec * OSAL_THOUSAND;
+#endif
     return OSAL_SUCCESS;
 }
 
@@ -473,7 +482,11 @@ osalTimestampGet (void)
 {
     UINT64 timestamp;
     /* Read the 64-bit LSB of the time stamp counter */
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 7, 0))
+    timestamp = rdtsc_ordered();
+#else
     rdtscll(timestamp);
+#endif
     return (timestamp);
 }
 
