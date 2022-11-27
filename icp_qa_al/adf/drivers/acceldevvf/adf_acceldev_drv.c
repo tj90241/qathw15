@@ -403,6 +403,7 @@ static int adf_probe(struct pci_dev *pdev,
         }
 
         /* set dma identifier */
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3,12,27)
         if (pci_set_dma_mask(pdev, DMA_BIT_MASK(64))) {
                 if ((pci_set_dma_mask(pdev, DMA_BIT_MASK(32)))) {
 
@@ -412,6 +413,17 @@ static int adf_probe(struct pci_dev *pdev,
                         return -EIO;
                 }
         }
+#else
+        if (dma_set_mask(&pdev->dev, DMA_BIT_MASK(64))) {
+                if (dma_set_mask(&pdev->dev, DMA_BIT_MASK(32))) {
+
+                        ADF_ERROR("No usable DMA configuration,"
+                                      "aborting\n");
+                        adf_cleanup_accel(accel_dev);
+                        return -EIO;
+                }
+        }
+#endif
 
         if ((status = pci_request_regions(pdev, adf_driver_name))) {
                 adf_cleanup_accel(accel_dev);

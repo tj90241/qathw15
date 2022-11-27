@@ -212,6 +212,7 @@ osalZlibInflate(void *srcBufferList,
                    break;
                }
            } /* Z_BUF_ERROR falls through on unrecoverable error */
+               fallthrough;
            case Z_NEED_DICT:
            case Z_DATA_ERROR:
            case Z_MEM_ERROR:

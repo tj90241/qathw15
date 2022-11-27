@@ -249,6 +249,7 @@ adf_c2xxx_getDevSKU(Cpa32U NumAccelerators, Cpa32U NumAccelEngines, Cpa32U ClkMa
             {
                 return DEV_SKU_2;
             }
+            fallthrough;
         case ICP_C2XXX_MAX_ACCELENGINES:
             return DEV_SKU_1;
         default:

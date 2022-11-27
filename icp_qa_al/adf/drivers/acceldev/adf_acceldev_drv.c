@@ -361,6 +361,7 @@ static int adf_vf_probe(struct pci_dev *pdev)
                 return -ENOMEM;
         }
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3,12,27)
         if (pci_set_dma_mask(pdev, DMA_BIT_MASK(64))) {
                 if ((pci_set_dma_mask(pdev, DMA_BIT_MASK(32)))) {
 
@@ -376,6 +377,17 @@ static int adf_vf_probe(struct pci_dev *pdev)
         else {
                 pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(64));
         }
+#else
+        if (dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64))) {
+                if (dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(32))) {
+
+                        ADF_ERROR("No usable DMA configuration in VF,"
+                                      "aborting\n");
+                        pci_disable_device(pdev);
+                        return -EIO;
+                }
+        }
+#endif
 
         pci_set_master(pdev);
 
@@ -685,6 +697,7 @@ static int adf_probe(struct pci_dev *pdev,
 #if LINUX_VERSION_CODE <= KERNEL_VERSION(2,6,23)
         #define DMA_BIT_MASK(n) (((n) == 64) ? ~0ULL : ((1ULL<<(n))-1))
 #endif
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3,12,27)
         if (pci_set_dma_mask(pdev, DMA_BIT_MASK(64))) {
                 if ((pci_set_dma_mask(pdev, DMA_BIT_MASK(32)))) {
 
@@ -700,6 +713,17 @@ static int adf_probe(struct pci_dev *pdev,
         else {
                 pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(64));
         }
+#else
+        if (dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64))) {
+                if (dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(32))) {
+
+                        ADF_ERROR("No usable DMA configuration,"
+                                      "aborting\n");
+                        adf_cleanup_accel(accel_dev);
+                        return -EIO;
+                }
+        }
+#endif
 
         status = adf_alloc_coherent_buf(accel_dev);
         if (SUCCESS != status) {

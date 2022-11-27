@@ -211,7 +211,11 @@ static int adf_debug_open(struct inode *inode, struct file *file)
         }
 #else
         if (!ret) {
+#if LINUX_VERSION_CODE <= KERNEL_VERSION(5,17,0)
                  ((struct seq_file *)file->private_data)->private = PDE_DATA(inode);
+#else
+                 ((struct seq_file *)file->private_data)->private = pde_data(inode);
+#endif
         }
 #endif
         mutex_unlock(&proc_debug_lock);

@@ -537,7 +537,7 @@ LacDrbg_InitSymSession(sal_crypto_service_t *pService,
 #if defined(__INTEL_COMPILER) && (__INTEL_COMPILER < 1300)
 #pragma warning(enable)
 #endif
-    Cpa8U key[pInternalState->nImplKeyLen];
+    Cpa8U key[LAC_DRBG_KEYLEN256_IN_BYTES];
 
     /* Prepare session setup data */
 
